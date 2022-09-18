@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title>La Alta Velocidad en Andalucía y el desmantelamiento de la red de Media Distancia</title>
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
+
+		<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+		<style>
+			body {
+			padding: 0;
+			margin: 0;
+			}
+			html, body, #map {
+			height: 100%;
+					box-shadow: 5px 5px 5px #888;
+			}
+			.info {
+				padding: 6px 8px;
+				font: 14px/16px Arial, Helvetica, sans-serif;
+				text-align: center;
+				background: white;
+				background: rgba(255,255,255,0.8);
+				box-shadow: 0 0 15px rgba(0,0,0,0.2);
+				border-radius: 5px;
+			}
+			.info h2 {
+				margin: 0 0 5px;
+				color: #777;
+			}
+			.legend {
+				opacity: 0.7;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="map" style="width: 100%; height: 800px;"></div>
+		<button onclick=fullScreenView()>Ver en vista completa</button>
+		<script>
+			var OSM = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+				attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
+				+'contributors',
+			maxZoom: 18
+			});
+			
+			var darkLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+				subdomains: 'abcd',
+				maxZoom: 20
+			});
+			
+			var watermap = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}', {
+				attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+				subdomains: 'abcd',
+				minZoom: 1,
+				maxZoom: 16,
+				ext: 'jpg'
+			});
+			
+			var provincias = L.tileLayer.wms("http://localhost:8080/geoserver/wms", {
+				layers: 'andalucia:provincias',
+				format: 'image/png',
+				transparent: true,
+				tiled: true,
+				attribution: "Natural Earth"
+			});
+	 
+			var lineas = L.tileLayer.wms("http://localhost:8080/geoserver/wms", {
+				layers: 'andalucia:lineas_tren',
+				format: 'image/png',
+				transparent: true,
+				tiled: true,
+				attribution: "Natural Earth"
+			});
+
+			var estaciones = L.tileLayer.wms("http://localhost:8080/geoserver/wms", {
+				layers: 'andalucia:estaciones_tren',
+				format: 'image/png',
+				transparent: true,
+				tiled: true,
+				attribution: "Natural Earth"
+			});		
+
+			var baseMaps = {
+				"OpenStreetMap": OSM,
+				"Fondo oscuro": darkLayer,
+				"Terreno": watermap
+			};
+	
+			var overlayMaps = {
+				"Estaciones de tren": estaciones,
+				"Líneas de tren": lineas,
+				"Provincias": provincias
+			};			
+			
+			var map = L.map('map', {
+				center: [37.295, -4.568],
+				zoom: 8,
+				layers: [OSM, provincias, lineas, estaciones],
+				scrollWheelZoom: true
+			});
+			
+			var marker = L.marker([37.3922422036603, -5.975281017358207])
+			.addTo(map)
+			.bindPopup("<h2> Estación de Sevilla Santa Justa </h2> <p> Es la principal estación ferroviaria de Sevilla. Fue inaugrada el 2 de mayo de 1991. Su apertura supuso la unión de los servicios de las históricas estaciones de Plaza de Armas (o estación de Córdoba) y de San Bernardo (o estación de Cádiz). Es la tercera estación de España, con un volumen de viajeros cercano a los 13 millones anuales de los cuales alrededor de 7 millones se corresponden con el tráfico de cercanías.  </p> <img src='./img/santajusta.jpg'/>")
+
+
+			var legend = L.control({position: 'bottomleft'});
+			legend.onAdd = function (map) {
+				var div = L.DomUtil.create('div', 'info legend');
+					div.innerHTML +=
+					'<img src="http://localhost:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=andalucia:lineas_tren" alt="legend" width="350" height="300">';
+				return div;
+			};
+			legend.addTo(map);
+			
+			var title = L.control();
+			title.onAdd = function (map) {
+				var div = L.DomUtil.create('div', 'info');
+					div.innerHTML +=
+					'<h2>La situación del tren en Andalucía</h2>El desmantelamiento de la red de Media Distancia y el auge del AVE';
+				return div;
+			};
+			title.addTo(map);
+			
+			L.control.layers(baseMaps, overlayMaps, {collapsed:false}).addTo(map);
+
+			L.control.scale({
+				position: 'bottomright',
+				maxWidth: 400,
+				imperial: false
+			}).addTo(map);		
+			
+			var mapId = document.getElementById('map');
+				function fullScreenView(){
+				mapId.requestFullscreen();
+			};
+		</script>
+	</body>
+</html>
