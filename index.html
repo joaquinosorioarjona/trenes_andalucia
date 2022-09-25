@@ -67,12 +67,22 @@
 				attribution: "Natural Earth"
 			});
 	 
+			var ave = L.tileLayer.wms("http://localhost:8080/geoserver/wms", {
+				layers: 'andalucia:lineas_tren',
+				format: 'image/png',
+				transparent: true,
+				tiled: true,
+				attribution: "Natural Earth",
+				CQL_FILTER:"linea = 'Línea de Alta Velocidad Española'",
+			});
+			
 			var lineas = L.tileLayer.wms("http://localhost:8080/geoserver/wms", {
 				layers: 'andalucia:lineas_tren',
 				format: 'image/png',
 				transparent: true,
 				tiled: true,
-				attribution: "Natural Earth"
+				attribution: "Natural Earth",
+				CQL_FILTER:"linea <> 'Línea de Alta Velocidad Española'",
 			});
 			
 			var baseMaps = {
@@ -84,12 +94,12 @@
 			var map = L.map('map', {
 				center: [37.295, -4.568],
 				zoom: 8,
-				layers: [OSM, provincias, lineas],
+				layers: [OSM, provincias, ave, lineas],
 				scrollWheelZoom: true
 			});
 			
 			var pointstyle = {
-				radius: 7,
+				radius: 5,
 				fillColor: "#A52A2A",
 				color: "#000",
 				weight: 1,
@@ -144,7 +154,8 @@
 			title.addTo(map);
 			
 			var overlayMaps = {
-				"Líneas de tren": lineas,
+				"Red de Alta Velocidad Española": ave,
+				"Líneas de tren de media distancia": lineas,
 				"Provincias": provincias
 			};			
 			
