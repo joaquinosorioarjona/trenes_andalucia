@@ -134,9 +134,10 @@
 					}
 				});
 			
+			var picurl = 'images/santajusta.jpg';
 			var marker = L.marker([37.3922422036603, -5.975281017358207])
 			.addTo(map)
-			.bindPopup("<h2> Estación de Sevilla Santa Justa </h2> <p> Es la principal estación ferroviaria de Sevilla. Fue inaugrada el 2 de mayo de 1991. Su apertura supuso la unión de los servicios de las históricas estaciones de Plaza de Armas (o estación de Córdoba) y de San Bernardo (o estación de Cádiz). Es la tercera estación de España, con un volumen de viajeros cercano a los 13 millones anuales de los cuales alrededor de 7 millones se corresponden con el tráfico de cercanías.  </p> <br><img src='images/santajusta.jpg'/>")
+			.bindPopup("<h2> Estación de Sevilla Santa Justa </h2> <p> Es la principal estación ferroviaria de Sevilla. Fue inaugrada el 2 de mayo de 1991. Su apertura supuso la unión de los servicios de las históricas estaciones de Plaza de Armas (o estación de Córdoba) y de San Bernardo (o estación de Cádiz). Es la tercera estación de España, con un volumen de viajeros cercano a los 13 millones anuales de los cuales alrededor de 7 millones se corresponden con el tráfico de cercanías.  </p> <br><img src='" + picurl+ "'" + " class=popupImage " + "width=300 height=200 />")
 
 			var legend = L.control({position: 'bottomleft'});
 			legend.onAdd = function (map) {
